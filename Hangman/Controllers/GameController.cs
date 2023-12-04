@@ -43,12 +43,10 @@ namespace Hangman.Controllers
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
 
-            var correctLettersWithSpaces = AddSpacesBetweenLetters(game.CorrectLetters);
-
             var result = new
             {
                 gameStatus = game.GameStatus.GetDescription(),
-                correctLetters = correctLettersWithSpaces
+                word = AddSpacesBetweenLetters(game.CorrectLetters)
             };
 
             return Ok(result);
@@ -73,13 +71,42 @@ namespace Hangman.Controllers
             return Ok(result);
         }
 
-        //[HttpPost]
-        //public IActionResult Guess(int id, char guess)
-        //{
+        [HttpPost]
+        [Route("Game/{id}/Guess/{guessChar}")]
+        public IActionResult Guess(int id, char guessChar)
+        {
+            var game = gameRepo.Get(id);
+            if (game == null) return NotFound();
 
+            guessChar = char.ToLower(guessChar);
 
-        //    return Ok();
-        //}
+            var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(guessChar);
+            if (alreadyGuessedLetter) return Ok(new { error = $"You already guessed the letter {guessChar}" });
+
+            var guessCorrect = game.Word.Contains(guessChar);
+            var guess        = new Guess(guessChar, guessCorrect, id);
+
+            if (guessCorrect)
+            {
+                var positionsOfLetter = CorrectLetterPositions(game.Word, guessChar);
+
+                foreach (var position in positionsOfLetter)
+                {
+                    game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, guessChar);
+                }
+            }
+
+            gameRepo.Update(game);
+            guessRepo.Add(guess);
+
+            var result = new
+            {
+                guessCorrect = guessCorrect,
+                word = AddSpacesBetweenLetters(game.CorrectLetters)
+            };
+
+            return Ok(result);
+        }
 
         #endregion
 
@@ -88,6 +115,22 @@ namespace Hangman.Controllers
         private string AddSpacesBetweenLetters(string word)
         {
             return string.Join("", word.Select(c => c + " ")).Trim();
+        }
+
+        private List<int> CorrectLetterPositions(string word, char guess)
+        {
+            var positions = new List<int>();
+
+            while (true)
+            {
+                var position = word.IndexOf(guess);
+                if (position == -1) break;
+
+                word = word.ReplaceCharAt(position, '-');
+                positions.Add(position);
+            }
+
+            return positions;
         }
 
         #endregion

@@ -17,5 +17,16 @@
         public Game Game { get; set; }
 
         #endregion
+
+        #region Constructors
+
+        public Guess(char characterGuessed, bool isCorrect, int gameId )
+        {
+            CharacterGuessed = characterGuessed;
+            IsCorrect        = isCorrect;
+            GameId           = gameId;
+        }
+
+        #endregion
     }
 }

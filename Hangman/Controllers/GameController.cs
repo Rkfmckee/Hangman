@@ -1,4 +1,6 @@
+using Hangman.Data;
 using Hangman.Data.Interfaces;
+using Hangman.Helpers;
 using Hangman.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +12,25 @@ namespace Hangman.Controllers
     {
         #region Fields
 
+        private readonly ApplicationDbContext dbContext;
         private readonly IRepository<Game> gameRepo;
         private readonly IRepository<Guess> guessRepo;
+        private readonly IRepository<Words> wordRepo;
+
+        private Random random;
 
         #endregion
 
         #region Constructors
 
-        public GameController(IRepository<Game> gameRepo, IRepository<Guess> guessRepo)
+        public GameController(ApplicationDbContext dbContext, IRepository<Game> gameRepo, IRepository<Guess> guessRepo, IRepository<Words> wordRepo)
         {
-            this.gameRepo = gameRepo;
+            this.dbContext = dbContext;
+            this.gameRepo  = gameRepo;
             this.guessRepo = guessRepo;
+            this.wordRepo  = wordRepo;
+
+            random = new Random();
         }
 
         #endregion
@@ -28,15 +38,48 @@ namespace Hangman.Controllers
         #region Actions
 
         [HttpGet]
-        public Game GetGame(int id)
+        [ProducesResponseType(200, Type = typeof(Game))]
+        public IActionResult GetGame(int id)
         {
-            return new Game();
+            var game = gameRepo.Get(id);
+            if (game == null) return NotFound();
+
+            var correctLettersWithSpaces = AddSpacesBetweenLetters(game.CorrectLetters);
+
+            var result = new
+            {
+                gameStatus = game.GameStatus.GetDescription(),
+                correctLetters = correctLettersWithSpaces
+            };
+
+            return Ok(result);
         }
 
         [HttpPost]
-        public Game CreateGame()
+        public IActionResult CreateGame()
         {
-            return new Game();
+            var totalWords = dbContext.Words.Count();
+            var wordId     = random.Next(0, totalWords);
+            var word       = wordRepo.Get(wordId).Word;
+
+            var game = new Game(word);
+            gameRepo.Add(game);
+
+            var result = new
+            {
+                gameId = game.Id
+            };
+
+            return Ok(result);
+        }
+
+        #endregion
+
+        #region Methods
+
+        private string AddSpacesBetweenLetters(string word)
+        {
+            return string.Join("", word.Select(c => c + " ")).Trim();
         }
 
         #endregion

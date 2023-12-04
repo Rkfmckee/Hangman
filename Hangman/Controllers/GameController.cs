@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hangman.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class GameController : ControllerBase
     {
         #region Fields
@@ -38,7 +37,7 @@ namespace Hangman.Controllers
         #region Actions
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(Game))]
+        [Route("Game/{id}")]
         public IActionResult GetGame(int id)
         {
             var game = gameRepo.Get(id);
@@ -56,6 +55,7 @@ namespace Hangman.Controllers
         }
 
         [HttpPost]
+        [Route("Game")]
         public IActionResult CreateGame()
         {
             var totalWords = dbContext.Words.Count();
@@ -72,6 +72,14 @@ namespace Hangman.Controllers
 
             return Ok(result);
         }
+
+        //[HttpPost]
+        //public IActionResult Guess(int id, char guess)
+        //{
+
+
+        //    return Ok();
+        //}
 
         #endregion
 

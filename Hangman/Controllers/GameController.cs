@@ -37,28 +37,12 @@ namespace Hangman.Controllers
 
         #region Actions
 
-        [HttpGet]
-        [Route("Game/{id}")]
-        public IActionResult GetGame(Guid id)
-        {
-            var game = gameRepo.Get(id);
-            if (game == null) return NotFound();
-
-            var result = new
-            {
-                gameStatus = game.GameStatus.GetDescription(),
-                word = AddSpacesBetweenLetters(game.CorrectLetters)
-            };
-
-            return Ok(result);
-        }
-
         [HttpPost]
         [Route("Game")]
         public IActionResult CreateGame()
         {
             var skipNum = random.Next(0, dbContext.Words.Count());
-            var word    = dbContext.Words.OrderBy(w => w.Id).Skip(skipNum).First().Word;
+            var word = dbContext.Words.OrderBy(w => w.Id).Skip(skipNum).First();
 
             var game = new Game(word);
             gameRepo.Add(game);
@@ -71,6 +55,41 @@ namespace Hangman.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("Game/{id}")]
+        public IActionResult GetGame(Guid id)
+        {
+            var game = gameRepo.Get(id);
+            if (game == null) return NotFound();
+
+            var result = new
+            {
+                gameStatus = game.GameStatus.GetDescription(),
+                word = AddSpacesBetweenLetters(game.CorrectLetters),
+                incorrectGuessesRemaining = game.IncorrectGuessesLeft,
+                guesses = GetCharsOfGuesses(game.Guesses)
+            };
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("Games")]
+        public IActionResult GetAllGames()
+        {
+            var games = gameRepo.GetAll();
+            if (games == null) return NotFound();
+
+            var gameStates = new Dictionary<Guid, string>();
+
+            foreach (var game in games)
+            {
+                gameStates.Add(game.Id, game.GameStatus.GetDescription());
+            }
+
+            return Ok(gameStates);
+        }
+
         [HttpPost]
         [Route("Game/{id}/Guess/{guessChar}")]
         public IActionResult Guess(Guid id, char guessChar)
@@ -80,24 +99,26 @@ namespace Hangman.Controllers
 
             if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = $"You can only guess in a game which is in progress." });
 
+            if (!char.IsLetter(guessChar)) return BadRequest(new { error = $"You can only guess letters." });
+
             guessChar = char.ToUpper(guessChar);
 
             var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(guessChar);
             if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {guessChar}." });
 
-            var guessCorrect = game.Word.Contains(guessChar);
+            var guessCorrect = game.ChosenWord.Word.Contains(guessChar);
             var guess        = new Guess(guessChar, guessCorrect, id);
 
             if (guessCorrect)
             {
-                var positionsOfLetter = CorrectLetterPositions(game.Word, guessChar);
+                var positionsOfLetter = CorrectLetterPositions(game.ChosenWord.Word, guessChar);
 
                 foreach (var position in positionsOfLetter)
                 {
                     game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, guessChar);
                 }
 
-                if (string.Equals(game.Word, game.CorrectLetters)) game.GameStatus = GameStatus.Won;
+                if (string.Equals(game.ChosenWord.Word, game.CorrectLetters)) game.GameStatus = GameStatus.Won;
             }
             else
             {
@@ -121,6 +142,18 @@ namespace Hangman.Controllers
             };
 
             return Ok(result);
+        }
+
+        [HttpDelete]
+        [Route("Game/{id}")]
+        public IActionResult DeleteGame(Guid id)
+        {
+            var game = gameRepo.Get(id);
+            if (game == null) return NotFound();
+
+            gameRepo.Delete(game);
+
+            return NoContent();
         }
 
         #endregion

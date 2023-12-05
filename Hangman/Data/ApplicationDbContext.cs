@@ -31,6 +31,10 @@ namespace Hangman.Data
 
             builder.Entity<Game>().HasMany(ga => ga.Guesses).WithOne(gu => gu.Game).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Game>().Navigation(ga => ga.Guesses).AutoInclude();
+
+            builder.Entity<Game>().HasOne(ga => ga.ChosenWord).WithMany(w => w.GamesUsed);
+            builder.Entity<Game>().Navigation(ga => ga.ChosenWord).AutoInclude();
+
             builder.Entity<Game>().Property(ga => ga.GameStatus).HasConversion(new EnumToStringConverter<GameStatus>());
         }
 

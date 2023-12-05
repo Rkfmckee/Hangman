@@ -6,8 +6,6 @@ namespace Hangman.Models
     {
         #region Properties
 
-        public string Word { get; set; }
-
         public string CorrectLetters { get; set; }
 
         public int IncorrectGuessesLeft { get; set; }
@@ -18,20 +16,27 @@ namespace Hangman.Models
 
         #region Relationships
 
+        public Guid ChosenWordId { get; set; }
+        public Words ChosenWord { get; set; }
+
         public List<Guess> Guesses { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public Game(string word)
+        public Game()
         {
-            Word                  = word;
-            CorrectLetters        = string.Empty;
-            IncorrectGuessesLeft  = 6;
-            GameStatus            = GameStatus.InProgress;
+        }
 
-            for (int i = 0; i < Word.Length; i++)
+        public Game(Words word)
+        {
+            ChosenWord           = word;
+            CorrectLetters       = string.Empty;
+            IncorrectGuessesLeft = 6;
+            GameStatus           = GameStatus.InProgress;
+
+            for (int i = 0; i < ChosenWord.Word.Length; i++)
             {
                 CorrectLetters += "_";
             }

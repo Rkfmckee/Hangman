@@ -80,7 +80,7 @@ namespace Hangman.Controllers
 
             if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = $"You can only guess in a game which is in progress." });
 
-            guessChar = char.ToLower(guessChar);
+            guessChar = char.ToUpper(guessChar);
 
             var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(guessChar);
             if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {guessChar}." });
@@ -96,6 +96,8 @@ namespace Hangman.Controllers
                 {
                     game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, guessChar);
                 }
+
+                if (string.Equals(game.Word, game.CorrectLetters)) game.GameStatus = GameStatus.Won;
             }
             else
             {
@@ -114,7 +116,8 @@ namespace Hangman.Controllers
             {
                 guessCorrect              = guessCorrect,
                 word                      = AddSpacesBetweenLetters(game.CorrectLetters),
-                incorrectGuessesRemaining = game.IncorrectGuessesLeft
+                incorrectGuessesRemaining = game.IncorrectGuessesLeft,
+                guesses                   = GetCharsOfGuesses(game.Guesses)
             };
 
             return Ok(result);
@@ -143,6 +146,19 @@ namespace Hangman.Controllers
             }
 
             return positions;
+        }
+
+        private string GetCharsOfGuesses(List<Guess> guesses)
+        {
+            string characters = string.Empty;
+
+            foreach (var guess in guesses)
+            {
+                characters += $"{guess.CharacterGuessed}, ";
+            }
+
+            characters = characters.Trim().Trim(',');
+            return characters;
         }
 
         #endregion

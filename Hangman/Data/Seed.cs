@@ -40,7 +40,7 @@ namespace Hangman.Data
 
 			while (!reader.EndOfStream)
 			{
-				var word = reader.ReadLine().Trim();
+				var word = reader.ReadLine().Trim().ToUpper();
 				context.Words.Add(new Words(word));
 			}
 

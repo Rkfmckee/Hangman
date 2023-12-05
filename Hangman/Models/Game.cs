@@ -10,7 +10,7 @@ namespace Hangman.Models
 
         public string CorrectLetters { get; set; }
 
-        public int IncorrectGuesses { get; set; }
+        public int IncorrectGuessesLeft { get; set; }
 
         public GameStatus GameStatus { get; set; }
 
@@ -26,10 +26,10 @@ namespace Hangman.Models
 
         public Game(string word)
         {
-            Word              = word;
-            CorrectLetters    = string.Empty;
-            IncorrectGuesses  = 0;
-            GameStatus        = GameStatus.InProgress;
+            Word                  = word;
+            CorrectLetters        = string.Empty;
+            IncorrectGuessesLeft  = 6;
+            GameStatus            = GameStatus.InProgress;
 
             for (int i = 0; i < Word.Length; i++)
             {

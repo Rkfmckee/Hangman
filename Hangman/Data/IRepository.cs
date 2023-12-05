@@ -5,9 +5,7 @@
         #region Get methods
 
         IEnumerable<T> GetAll();
-        Task<IEnumerable<T>> GetAllAsync();
-        T Get(int id);
-        Task<T> GetAsync(int id);
+        T Get(Guid id);
 
         #endregion
 

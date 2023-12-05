@@ -30,19 +30,9 @@ namespace Hangman.Data.Repositories
             return dbSet.ToList();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await dbSet.ToListAsync();
-        }
-
-        public virtual T Get(int id)
+        public virtual T Get(Guid id)
         {
             return dbSet.FirstOrDefault(c => c.Id == id);
-        }
-
-        public virtual async Task<T> GetAsync(int id)
-        {
-            return await dbSet.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         #endregion

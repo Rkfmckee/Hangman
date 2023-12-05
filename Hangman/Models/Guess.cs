@@ -12,7 +12,7 @@
 
         #region Relationships
 
-        public int GameId { get; set; }
+        public Guid GameId { get; set; }
 
         public Game Game { get; set; }
 
@@ -20,7 +20,7 @@
 
         #region Constructors
 
-        public Guess(char characterGuessed, bool isCorrect, int gameId )
+        public Guess(char characterGuessed, bool isCorrect, Guid gameId )
         {
             CharacterGuessed = characterGuessed;
             IsCorrect        = isCorrect;

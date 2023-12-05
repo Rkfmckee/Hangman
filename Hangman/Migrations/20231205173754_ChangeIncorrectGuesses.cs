@@ -5,34 +5,24 @@
 namespace Hangman.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCorrectLetters : Migration
+    public partial class ChangeIncorrectGuesses : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "GameState",
+                name: "IncorrectGuesses",
                 table: "Game",
-                newName: "GameStatus");
-
-            migrationBuilder.AddColumn<string>(
-                name: "CorrectLetters",
-                table: "Game",
-                type: "nvarchar(max)",
-                nullable: true);
+                newName: "IncorrectGuessesLeft");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CorrectLetters",
-                table: "Game");
-
             migrationBuilder.RenameColumn(
-                name: "GameStatus",
+                name: "IncorrectGuessesLeft",
                 table: "Game",
-                newName: "GameState");
+                newName: "IncorrectGuesses");
         }
     }
 }

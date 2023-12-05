@@ -1,5 +1,6 @@
 using Hangman.Data;
 using Hangman.Data.Interfaces;
+using Hangman.Enums;
 using Hangman.Helpers;
 using Hangman.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +39,7 @@ namespace Hangman.Controllers
 
         [HttpGet]
         [Route("Game/{id}")]
-        public IActionResult GetGame(int id)
+        public IActionResult GetGame(Guid id)
         {
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
@@ -56,9 +57,8 @@ namespace Hangman.Controllers
         [Route("Game")]
         public IActionResult CreateGame()
         {
-            var totalWords = dbContext.Words.Count();
-            var wordId     = random.Next(0, totalWords);
-            var word       = wordRepo.Get(wordId).Word;
+            var skipNum = random.Next(0, dbContext.Words.Count());
+            var word    = dbContext.Words.OrderBy(w => w.Id).Skip(skipNum).First().Word;
 
             var game = new Game(word);
             gameRepo.Add(game);
@@ -73,15 +73,17 @@ namespace Hangman.Controllers
 
         [HttpPost]
         [Route("Game/{id}/Guess/{guessChar}")]
-        public IActionResult Guess(int id, char guessChar)
+        public IActionResult Guess(Guid id, char guessChar)
         {
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
 
+            if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = $"You can only guess in a game which is in progress." });
+
             guessChar = char.ToLower(guessChar);
 
             var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(guessChar);
-            if (alreadyGuessedLetter) return Ok(new { error = $"You already guessed the letter {guessChar}" });
+            if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {guessChar}." });
 
             var guessCorrect = game.Word.Contains(guessChar);
             var guess        = new Guess(guessChar, guessCorrect, id);
@@ -95,14 +97,24 @@ namespace Hangman.Controllers
                     game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, guessChar);
                 }
             }
+            else
+            {
+                game.IncorrectGuessesLeft--;
+
+                if (game.IncorrectGuessesLeft <= 0)
+                {
+                    game.GameStatus = GameStatus.Lost;
+                }
+            }
 
             gameRepo.Update(game);
             guessRepo.Add(guess);
 
             var result = new
             {
-                guessCorrect = guessCorrect,
-                word = AddSpacesBetweenLetters(game.CorrectLetters)
+                guessCorrect              = guessCorrect,
+                word                      = AddSpacesBetweenLetters(game.CorrectLetters),
+                incorrectGuessesRemaining = game.IncorrectGuessesLeft
             };
 
             return Ok(result);

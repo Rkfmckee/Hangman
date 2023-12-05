@@ -12,7 +12,6 @@ namespace Hangman.Controllers
     {
         #region Fields
 
-        private readonly ApplicationDbContext dbContext;
         private readonly IRepository<Game> gameRepo;
         private readonly IRepository<Guess> guessRepo;
         private readonly IRepository<Words> wordRepo;
@@ -23,9 +22,8 @@ namespace Hangman.Controllers
 
         #region Constructors
 
-        public GameController(ApplicationDbContext dbContext, IRepository<Game> gameRepo, IRepository<Guess> guessRepo, IRepository<Words> wordRepo)
+        public GameController(IRepository<Game> gameRepo, IRepository<Guess> guessRepo, IRepository<Words> wordRepo)
         {
-            this.dbContext = dbContext;
             this.gameRepo  = gameRepo;
             this.guessRepo = guessRepo;
             this.wordRepo  = wordRepo;
@@ -41,8 +39,9 @@ namespace Hangman.Controllers
         [Route("Game")]
         public IActionResult CreateGame()
         {
-            var skipNum = random.Next(0, dbContext.Words.Count());
-            var word = dbContext.Words.OrderBy(w => w.Id).Skip(skipNum).First();
+            var words   = wordRepo.GetAll();
+            var skipNum = random.Next(0, words.Count());
+            var word    = words.OrderBy(w => w.Id).Skip(skipNum).First();
 
             var game = new Game(word);
             gameRepo.Add(game);
@@ -65,7 +64,7 @@ namespace Hangman.Controllers
             var result = new
             {
                 gameStatus = game.GameStatus.GetDescription(),
-                word = AddSpacesBetweenLetters(game.CorrectLetters),
+                word = game.CorrectLetters.AddSpacesBetweenLetters(),
                 incorrectGuessesRemaining = game.IncorrectGuessesLeft,
                 guesses = GetCharsOfGuesses(game.Guesses)
             };
@@ -136,7 +135,7 @@ namespace Hangman.Controllers
             var result = new
             {
                 guessCorrect              = guessCorrect,
-                word                      = AddSpacesBetweenLetters(game.CorrectLetters),
+                word                      = game.CorrectLetters.AddSpacesBetweenLetters(),
                 incorrectGuessesRemaining = game.IncorrectGuessesLeft,
                 guesses                   = GetCharsOfGuesses(game.Guesses)
             };
@@ -159,11 +158,6 @@ namespace Hangman.Controllers
         #endregion
 
         #region Methods
-
-        private string AddSpacesBetweenLetters(string word)
-        {
-            return string.Join("", word.Select(c => c + " ")).Trim();
-        }
 
         private List<int> CorrectLetterPositions(string word, char guess)
         {

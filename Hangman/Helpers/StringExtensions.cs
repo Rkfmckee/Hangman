@@ -6,5 +6,10 @@
         {
             return original.Remove(position, 1).Insert(position, replaceWith.ToString());
         }
+
+        public static string AddSpacesBetweenLetters(this string word)
+        {
+            return string.Join("", word.Select(c => c + " ")).Trim();
+        }
     }
 }

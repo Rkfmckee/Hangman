@@ -96,9 +96,9 @@ namespace Hangman.Controllers
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
 
-            if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = $"You can only guess in a game which is in progress." });
+            if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = "You can only guess in a game which is in progress." });
 
-            if (!char.IsLetter(guessChar)) return BadRequest(new { error = $"You can only guess letters." });
+            if (!char.IsLetter(guessChar)) return BadRequest(new { error = "You can only guess letters." });
 
             guessChar = char.ToUpper(guessChar);
 

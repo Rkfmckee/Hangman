@@ -1,5 +1,9 @@
 # Hangman
 
+This project is configured to work with a SQL Server 2022 database.
+To seed a database, run the project from a commandline with the following parameter:
+	`dotnet run seeddata`
+
 ## Create a game
 
 ### Request

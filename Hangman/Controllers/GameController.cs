@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hangman.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
     public class GameController : ControllerBase
     {
         #region Fields
@@ -36,7 +37,6 @@ namespace Hangman.Controllers
         #region Actions
 
         [HttpPost]
-        [Route("Game")]
         public IActionResult CreateGame()
         {
             var words   = wordRepo.GetAll();
@@ -54,8 +54,7 @@ namespace Hangman.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("Game/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetGame(Guid id)
         {
             var game = gameRepo.Get(id);
@@ -72,8 +71,7 @@ namespace Hangman.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("Games")]
+        [HttpGet("List")]
         public IActionResult GetAllGames()
         {
             var games = gameRepo.GetAll();
@@ -89,8 +87,7 @@ namespace Hangman.Controllers
             return Ok(gameStates);
         }
 
-        [HttpPost]
-        [Route("Game/{id}/Guess/{guessChar}")]
+        [HttpPost("{id}/Guess/{guessChar}")]
         public IActionResult Guess(Guid id, char guessChar)
         {
             var game = gameRepo.Get(id);
@@ -143,8 +140,7 @@ namespace Hangman.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
-        [Route("Game/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteGame(Guid id)
         {
             var game = gameRepo.Get(id);

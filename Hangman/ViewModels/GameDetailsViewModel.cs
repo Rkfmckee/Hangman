@@ -8,7 +8,7 @@ namespace Hangman.API.ViewModels
     {
         public string GameStatus { get; set; }
         public string Word { get; set; }
-        public int IncorrectGuessesLeft { get; }
+        public int IncorrectGuessesLeft { get; set; }
         public string Guesses { get; set; }
 
         public GameDetailsViewModel(Game game)

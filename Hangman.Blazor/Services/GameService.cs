@@ -47,11 +47,11 @@ namespace Hangman.Blazor.Services
         public async Task<GameDetailsViewModel?> GetGame(Guid id)
         {
             var response = await httpClient.GetAsync($"api/game/{id}");
-            var x = response.RequestMessage.RequestUri.ToString();
 
             if (!response.IsSuccessStatusCode) return null;
 
             var responseBody = await response.Content.ReadAsStreamAsync();
+            var responseString = response.Content.ReadAsStringAsync();
 
             return await JsonSerializer.DeserializeAsync<GameDetailsViewModel>(responseBody, jsonOptions);
         }

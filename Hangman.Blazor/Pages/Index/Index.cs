@@ -2,7 +2,7 @@
 using Hangman.Blazor.ViewModels;
 using Microsoft.AspNetCore.Components;
 
-namespace Hangman.Blazor.Pages
+namespace Hangman.Blazor.Pages.Index
 {
     public partial class Index
     {

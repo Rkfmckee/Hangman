@@ -78,31 +78,34 @@ namespace Hangman.Controllers
             return Ok(gameList);
         }
 
-        [HttpPost("{id}/Guess/{guessChar}")]
-        public ActionResult<GuessViewModel> Guess(Guid id, char guessChar)
+        [HttpPost("Guess")]
+        public ActionResult<GuessViewModel> Guess(SubmitGuessViewModel guessSubmitted)
         {
-            var game = gameRepo.Get(id);
+            var gameId = guessSubmitted.GameId;
+            var characterGuessed = guessSubmitted.CharacterGuessed;
+
+            var game = gameRepo.Get(gameId);
             if (game == null) return NotFound();
 
             if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = "You can only guess in a game which is in progress." });
 
-            if (!char.IsLetter(guessChar)) return BadRequest(new { error = "You can only guess letters." });
+            if (!char.IsLetter(characterGuessed)) return BadRequest(new { error = "You can only guess letters." });
 
-            guessChar = char.ToUpper(guessChar);
+            characterGuessed = char.ToUpper(characterGuessed);
 
-            var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(guessChar);
-            if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {guessChar}." });
+            var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(characterGuessed);
+            if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {characterGuessed}." });
 
-            var guessCorrect = game.ChosenWord.Word.Contains(guessChar);
-            var guess        = new Guess(guessChar, guessCorrect, id);
+            var guessCorrect = game.ChosenWord.Word.Contains(characterGuessed);
+            var guess        = new Guess(characterGuessed, guessCorrect, gameId);
 
             if (guessCorrect)
             {
-                var positionsOfLetter = CorrectLetterPositions(game.ChosenWord.Word, guessChar);
+                var positionsOfLetter = CorrectLetterPositions(game.ChosenWord.Word, characterGuessed);
 
                 foreach (var position in positionsOfLetter)
                 {
-                    game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, guessChar);
+                    game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, characterGuessed);
                 }
 
                 if (string.Equals(game.ChosenWord.Word, game.CorrectLetters)) game.GameStatus = GameStatus.Won;

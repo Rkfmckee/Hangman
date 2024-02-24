@@ -1,5 +1,4 @@
-﻿using Hangman.Enums;
-using Hangman.Helpers;
+﻿using Hangman.Helpers;
 using Hangman.Models;
 
 namespace Hangman.API.ViewModels

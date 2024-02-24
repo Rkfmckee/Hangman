@@ -1,11 +1,9 @@
 using Hangman.API.ViewModels;
-using Hangman.Data;
 using Hangman.Data.Interfaces;
 using Hangman.Enums;
 using Hangman.Helpers;
 using Hangman.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace Hangman.Controllers
 {

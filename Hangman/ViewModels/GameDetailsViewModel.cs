@@ -1,5 +1,4 @@
 ﻿using Hangman.API.Helpers;
-using Hangman.Enums;
 using Hangman.Helpers;
 using Hangman.Models;
 

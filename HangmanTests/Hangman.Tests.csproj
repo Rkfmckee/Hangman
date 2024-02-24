@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hangman\Hangman.csproj" />
+    <ProjectReference Include="..\Hangman\Hangman.API.csproj" />
   </ItemGroup>
 
 </Project>

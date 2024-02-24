@@ -1,9 +1,11 @@
+using Hangman.API.ViewModels;
 using Hangman.Data;
 using Hangman.Data.Interfaces;
 using Hangman.Enums;
 using Hangman.Helpers;
 using Hangman.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace Hangman.Controllers
 {
@@ -37,7 +39,7 @@ namespace Hangman.Controllers
         #region Actions
 
         [HttpPost]
-        public IActionResult CreateGame()
+        public ActionResult<GameViewModel> CreateGame()
         {
             var words   = wordRepo.GetAll();
             var skipNum = random.Next(0, words.Count());
@@ -46,49 +48,40 @@ namespace Hangman.Controllers
             var game = new Game(word);
             gameRepo.Add(game);
 
-            var result = new
-            {
-                gameId = game.Id
-            };
+            var gameViewModel = new GameViewModel(game);
 
-            return Ok(result);
+            return CreatedAtAction(nameof(CreateGame), gameViewModel);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetGame(Guid id)
+        public ActionResult<GameDetailsViewModel> GetGame(Guid id)
         {
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
 
-            var result = new
-            {
-                gameStatus = game.GameStatus.GetDescription(),
-                word = game.CorrectLetters.AddSpacesBetweenLetters(),
-                incorrectGuessesRemaining = game.IncorrectGuessesLeft,
-                guesses = GetCharsOfGuesses(game.Guesses)
-            };
+            var gameDetailsViewModel = new GameDetailsViewModel(game);
 
-            return Ok(result);
+            return Ok(gameDetailsViewModel);
         }
 
         [HttpGet("List")]
-        public IActionResult GetAllGames()
+        public ActionResult<List<GameViewModel>> GetAllGames()
         {
             var games = gameRepo.GetAll();
             if (games == null) return NotFound();
 
-            var gameStates = new Dictionary<Guid, string>();
+            var gameList = new List<GameViewModel>();
 
             foreach (var game in games)
             {
-                gameStates.Add(game.Id, game.GameStatus.GetDescription());
+                gameList.Add(new GameViewModel(game));
             }
 
-            return Ok(gameStates);
+            return Ok(gameList);
         }
 
         [HttpPost("{id}/Guess/{guessChar}")]
-        public IActionResult Guess(Guid id, char guessChar)
+        public ActionResult<GuessViewModel> Guess(Guid id, char guessChar)
         {
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
@@ -129,15 +122,9 @@ namespace Hangman.Controllers
             gameRepo.Update(game);
             guessRepo.Add(guess);
 
-            var result = new
-            {
-                guessCorrect              = guessCorrect,
-                word                      = game.CorrectLetters.AddSpacesBetweenLetters(),
-                incorrectGuessesRemaining = game.IncorrectGuessesLeft,
-                guesses                   = GetCharsOfGuesses(game.Guesses)
-            };
+            var guessViewModel = new GuessViewModel(guessCorrect, game);
 
-            return Ok(result);
+            return Ok(guessViewModel);
         }
 
         [HttpDelete("{id}")]
@@ -169,19 +156,6 @@ namespace Hangman.Controllers
             }
 
             return positions;
-        }
-
-        private string GetCharsOfGuesses(List<Guess> guesses)
-        {
-            string characters = string.Empty;
-
-            foreach (var guess in guesses)
-            {
-                characters += $"{guess.CharacterGuessed}, ";
-            }
-
-            characters = characters.Trim().Trim(',');
-            return characters;
         }
 
         #endregion

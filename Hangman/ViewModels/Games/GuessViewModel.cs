@@ -2,18 +2,18 @@
 using Hangman.Helpers;
 using Hangman.Models;
 
-namespace Hangman.API.ViewModels
+namespace Hangman.API.ViewModels.Games
 {
-    public class GameDetailsViewModel
+    public class GuessViewModel
     {
-        public string GameStatus { get; set; }
+        public bool GuessCorrect { get; set; }
         public string Word { get; set; }
-        public int IncorrectGuessesLeft { get; set; }
+        public int IncorrectGuessesLeft { get; }
         public string Guesses { get; set; }
 
-        public GameDetailsViewModel(Game game)
+        public GuessViewModel(bool guessCorrect, Game game)
         {
-            GameStatus = game.GameStatus.GetDescription();
+            GuessCorrect = guessCorrect;
             Word = game.CorrectLetters.AddSpacesBetweenLetters();
             IncorrectGuessesLeft = game.IncorrectGuessesLeft;
             Guesses = game.Guesses.GetCharsOfGuesses();

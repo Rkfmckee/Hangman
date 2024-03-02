@@ -1,5 +1,5 @@
-﻿using Hangman.Helpers;
-using Hangman.Models;
+﻿using Hangman.API.Models;
+using Hangman.Helpers;
 
 namespace Hangman.API.ViewModels.Games
 {

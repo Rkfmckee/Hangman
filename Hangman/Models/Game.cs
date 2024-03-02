@@ -1,6 +1,6 @@
 ﻿using Hangman.Enums;
 
-namespace Hangman.Models
+namespace Hangman.API.Models
 {
     public class Game : Entity
     {
@@ -31,10 +31,10 @@ namespace Hangman.Models
 
         public Game(Words word)
         {
-            ChosenWord           = word;
-            CorrectLetters       = string.Empty;
+            ChosenWord = word;
+            CorrectLetters = string.Empty;
             IncorrectGuessesLeft = 6;
-            GameStatus           = GameStatus.InProgress;
+            GameStatus = GameStatus.InProgress;
 
             for (int i = 0; i < ChosenWord.Word.Length; i++)
             {

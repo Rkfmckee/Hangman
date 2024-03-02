@@ -1,6 +1,4 @@
-﻿using Hangman.Models;
-
-namespace Hangman.API.Models
+﻿namespace Hangman.API.Models
 {
     public class User : Entity
     {

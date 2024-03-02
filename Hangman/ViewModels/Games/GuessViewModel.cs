@@ -1,6 +1,6 @@
 ﻿using Hangman.API.Helpers;
+using Hangman.API.Models;
 using Hangman.Helpers;
-using Hangman.Models;
 
 namespace Hangman.API.ViewModels.Games
 {

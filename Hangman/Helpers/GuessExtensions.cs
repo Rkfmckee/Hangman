@@ -1,4 +1,4 @@
-﻿using Hangman.Models;
+﻿using Hangman.API.Models;
 
 namespace Hangman.API.Helpers
 {

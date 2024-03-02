@@ -1,11 +1,11 @@
 ﻿using FakeItEasy;
 using Hangman.Controllers;
 using Hangman.Data.Interfaces;
-using Hangman.Models;
 using Hangman.Helpers;
 using Hangman.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Hangman.API.ViewModels.Games;
+using Hangman.API.Models;
 
 namespace Hangman.Tests.Controllers
 {

@@ -1,5 +1,5 @@
-﻿using Hangman.Data.Interfaces;
-using Hangman.Models;
+﻿using Hangman.API.Models;
+using Hangman.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hangman.Data.Repositories

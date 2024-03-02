@@ -1,5 +1,5 @@
-﻿using Hangman.Enums;
-using Hangman.Models;
+﻿using Hangman.API.Models;
+using Hangman.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -20,6 +20,7 @@ namespace Hangman.Data
         public DbSet<Game> Game { get; set; }
         public DbSet<Guess> Guess { get; set; }
         public DbSet<Words> Words { get; set; }
+        public DbSet<User> Users { get; set; }
 
         #endregion
 

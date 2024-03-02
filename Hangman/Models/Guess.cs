@@ -1,4 +1,4 @@
-﻿namespace Hangman.Models
+﻿namespace Hangman.API.Models
 {
     public class Guess : Entity
     {
@@ -20,11 +20,11 @@
 
         #region Constructors
 
-        public Guess(char characterGuessed, bool isCorrect, Guid gameId )
+        public Guess(char characterGuessed, bool isCorrect, Guid gameId)
         {
             CharacterGuessed = characterGuessed;
-            IsCorrect        = isCorrect;
-            GameId           = gameId;
+            IsCorrect = isCorrect;
+            GameId = gameId;
         }
 
         #endregion

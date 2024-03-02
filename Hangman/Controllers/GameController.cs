@@ -1,8 +1,8 @@
+using Hangman.API.Models;
 using Hangman.API.ViewModels.Games;
 using Hangman.Data.Interfaces;
 using Hangman.Enums;
 using Hangman.Helpers;
-using Hangman.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hangman.Controllers

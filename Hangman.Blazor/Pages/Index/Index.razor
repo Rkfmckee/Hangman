@@ -4,22 +4,29 @@
 
 <h1>View all your games of Hangman</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Game ID</th>
-            <th>Game Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var game in Games)
-        {
+@if (Games.Count == 0)
+{
+    <h2>Loading...</h2>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@game.GameId</td>
-                <td>@game.GameStatus</td>
-                <td><a href="game/@game.GameId">View details</a></td>
+                <th>Game ID</th>
+                <th>Game Status</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var game in Games)
+            {
+                <tr>
+                    <td>@game.GameId</td>
+                    <td>@game.GameStatus</td>
+                    <td><a href="game/@game.GameId">View details</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

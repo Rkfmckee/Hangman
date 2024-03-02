@@ -1,4 +1,4 @@
-using Hangman.Data;
+using Hangman.API.ViewModels;
 using Hangman.Data.Interfaces;
 using Hangman.Enums;
 using Hangman.Helpers;
@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hangman.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
     public class GameController : ControllerBase
     {
         #region Fields
@@ -36,8 +37,7 @@ namespace Hangman.Controllers
         #region Actions
 
         [HttpPost]
-        [Route("Game")]
-        public IActionResult CreateGame()
+        public ActionResult<GameViewModel> CreateGame()
         {
             var words   = wordRepo.GetAll();
             var skipNum = random.Next(0, words.Count());
@@ -46,75 +46,66 @@ namespace Hangman.Controllers
             var game = new Game(word);
             gameRepo.Add(game);
 
-            var result = new
-            {
-                gameId = game.Id
-            };
+            var gameViewModel = new GameViewModel(game);
 
-            return Ok(result);
+            return CreatedAtAction(nameof(CreateGame), gameViewModel);
         }
 
-        [HttpGet]
-        [Route("Game/{id}")]
-        public IActionResult GetGame(Guid id)
+        [HttpGet("{id}")]
+        public ActionResult<GameDetailsViewModel> GetGame(Guid id)
         {
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
 
-            var result = new
-            {
-                gameStatus = game.GameStatus.GetDescription(),
-                word = game.CorrectLetters.AddSpacesBetweenLetters(),
-                incorrectGuessesRemaining = game.IncorrectGuessesLeft,
-                guesses = GetCharsOfGuesses(game.Guesses)
-            };
+            var gameDetailsViewModel = new GameDetailsViewModel(game);
 
-            return Ok(result);
+            return Ok(gameDetailsViewModel);
         }
 
-        [HttpGet]
-        [Route("Games")]
-        public IActionResult GetAllGames()
+        [HttpGet("List")]
+        public ActionResult<List<GameViewModel>> GetAllGames()
         {
             var games = gameRepo.GetAll();
             if (games == null) return NotFound();
 
-            var gameStates = new Dictionary<Guid, string>();
+            var gameList = new List<GameViewModel>();
 
             foreach (var game in games)
             {
-                gameStates.Add(game.Id, game.GameStatus.GetDescription());
+                gameList.Add(new GameViewModel(game));
             }
 
-            return Ok(gameStates);
+            return Ok(gameList);
         }
 
-        [HttpPost]
-        [Route("Game/{id}/Guess/{guessChar}")]
-        public IActionResult Guess(Guid id, char guessChar)
+        [HttpPost("Guess")]
+        public ActionResult<GuessViewModel> Guess(SubmitGuessViewModel guessSubmitted)
         {
-            var game = gameRepo.Get(id);
+            var gameId = guessSubmitted.GameId;
+            var characterGuessed = guessSubmitted.CharacterGuessed;
+
+            var game = gameRepo.Get(gameId);
             if (game == null) return NotFound();
 
             if (game.GameStatus != GameStatus.InProgress) return BadRequest(new { error = "You can only guess in a game which is in progress." });
 
-            if (!char.IsLetter(guessChar)) return BadRequest(new { error = "You can only guess letters." });
+            if (!char.IsLetter(characterGuessed)) return BadRequest(new { error = "You can only guess letters." });
 
-            guessChar = char.ToUpper(guessChar);
+            characterGuessed = char.ToUpper(characterGuessed);
 
-            var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(guessChar);
-            if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {guessChar}." });
+            var alreadyGuessedLetter = game.Guesses.Select(g => g.CharacterGuessed).Contains(characterGuessed);
+            if (alreadyGuessedLetter) return BadRequest(new { error = $"You already guessed the letter {characterGuessed}." });
 
-            var guessCorrect = game.ChosenWord.Word.Contains(guessChar);
-            var guess        = new Guess(guessChar, guessCorrect, id);
+            var guessCorrect = game.ChosenWord.Word.Contains(characterGuessed);
+            var guess        = new Guess(characterGuessed, guessCorrect, gameId);
 
             if (guessCorrect)
             {
-                var positionsOfLetter = CorrectLetterPositions(game.ChosenWord.Word, guessChar);
+                var positionsOfLetter = CorrectLetterPositions(game.ChosenWord.Word, characterGuessed);
 
                 foreach (var position in positionsOfLetter)
                 {
-                    game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, guessChar);
+                    game.CorrectLetters = game.CorrectLetters.ReplaceCharAt(position, characterGuessed);
                 }
 
                 if (string.Equals(game.ChosenWord.Word, game.CorrectLetters)) game.GameStatus = GameStatus.Won;
@@ -132,19 +123,12 @@ namespace Hangman.Controllers
             gameRepo.Update(game);
             guessRepo.Add(guess);
 
-            var result = new
-            {
-                guessCorrect              = guessCorrect,
-                word                      = game.CorrectLetters.AddSpacesBetweenLetters(),
-                incorrectGuessesRemaining = game.IncorrectGuessesLeft,
-                guesses                   = GetCharsOfGuesses(game.Guesses)
-            };
+            var guessViewModel = new GuessViewModel(guessCorrect, game);
 
-            return Ok(result);
+            return Ok(guessViewModel);
         }
 
-        [HttpDelete]
-        [Route("Game/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteGame(Guid id)
         {
             var game = gameRepo.Get(id);
@@ -173,19 +157,6 @@ namespace Hangman.Controllers
             }
 
             return positions;
-        }
-
-        private string GetCharsOfGuesses(List<Guess> guesses)
-        {
-            string characters = string.Empty;
-
-            foreach (var guess in guesses)
-            {
-                characters += $"{guess.CharacterGuessed}, ";
-            }
-
-            characters = characters.Trim().Trim(',');
-            return characters;
         }
 
         #endregion

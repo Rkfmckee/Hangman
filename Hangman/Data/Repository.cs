@@ -8,8 +8,8 @@ namespace Hangman.Data.Repositories
     {
         #region Fields
 
-        private readonly ApplicationDbContext context;
-        private readonly DbSet<T> dbSet;
+        protected readonly ApplicationDbContext context;
+        protected readonly DbSet<T> dbSet;
 
         #endregion
 

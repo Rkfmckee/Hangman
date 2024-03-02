@@ -1,3 +1,5 @@
+using Hangman.API.Data;
+using Hangman.API.Models;
 using Hangman.Data;
 using Hangman.Data.Interfaces;
 using Hangman.Data.Repositories;
@@ -19,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 
 var app = builder.Build();
 

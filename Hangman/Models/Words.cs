@@ -1,4 +1,4 @@
-﻿namespace Hangman.Models
+﻿namespace Hangman.API.Models
 {
     public class Words : Entity
     {

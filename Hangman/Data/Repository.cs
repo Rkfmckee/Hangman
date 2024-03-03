@@ -1,5 +1,5 @@
-﻿using Hangman.Data.Interfaces;
-using Hangman.Models;
+﻿using Hangman.API.Models;
+using Hangman.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hangman.Data.Repositories
@@ -8,8 +8,8 @@ namespace Hangman.Data.Repositories
     {
         #region Fields
 
-        private readonly ApplicationDbContext context;
-        private readonly DbSet<T> dbSet;
+        protected readonly ApplicationDbContext context;
+        protected readonly DbSet<T> dbSet;
 
         #endregion
 

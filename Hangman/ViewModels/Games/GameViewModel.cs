@@ -1,7 +1,7 @@
-﻿using Hangman.Helpers;
-using Hangman.Models;
+﻿using Hangman.API.Models;
+using Hangman.Helpers;
 
-namespace Hangman.API.ViewModels
+namespace Hangman.API.ViewModels.Games
 {
     public class GameViewModel
     {

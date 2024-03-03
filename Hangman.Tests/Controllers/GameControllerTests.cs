@@ -1,10 +1,11 @@
 ﻿using FakeItEasy;
 using Hangman.Controllers;
 using Hangman.Data.Interfaces;
-using Hangman.Models;
 using Hangman.Helpers;
 using Hangman.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Hangman.API.ViewModels.Games;
+using Hangman.API.Models;
 
 namespace Hangman.Tests.Controllers
 {
@@ -37,7 +38,7 @@ namespace Hangman.Tests.Controllers
         {
             A.CallTo(() => wordRepo.GetAll()).Returns(WordsList());
 
-            var actionResult = controller.CreateGame() as OkObjectResult;
+            var actionResult = controller.CreateGame() as CreatedAtActionResult;
             var gameId       = GetPropertyOfAnonymousObject(actionResult?.Value, "gameId");
 
             Assert.NotNull(gameId);
@@ -99,7 +100,8 @@ namespace Hangman.Tests.Controllers
         {
             A.CallTo(() => gameRepo.Get(1.ToGuid())).Returns(null);
 
-            var actionResult = controller.Guess(1.ToGuid(), 'A') as NotFoundResult;
+            var submitGuess = new SubmitGuessViewModel { GameId = 1.ToGuid(), CharacterGuessed = 'A' };
+            var actionResult = controller.Guess(submitGuess) as NotFoundResult;
 
             Assert.That(actionResult?.StatusCode, Is.EqualTo(404));
         }
@@ -112,7 +114,8 @@ namespace Hangman.Tests.Controllers
 
             A.CallTo(() => gameRepo.Get(game.Id)).Returns(game);
 
-            var actionResult = controller.Guess(game.Id, 'A') as BadRequestObjectResult;
+            var submitGuess = new SubmitGuessViewModel { GameId = game.Id, CharacterGuessed = 'A' };
+            var actionResult = controller.Guess(submitGuess) as BadRequestObjectResult;
             var error        = GetPropertyOfAnonymousObject(actionResult?.Value, "error") as string;
 
             Assert.That(actionResult?.StatusCode, Is.EqualTo(400));
@@ -126,7 +129,8 @@ namespace Hangman.Tests.Controllers
 
             A.CallTo(() => gameRepo.Get(game.Id)).Returns(game);
 
-            var actionResult = controller.Guess(game.Id, '1') as BadRequestObjectResult;
+            var submitGuess = new SubmitGuessViewModel { GameId = game.Id, CharacterGuessed = '1' };
+            var actionResult = controller.Guess(submitGuess) as BadRequestObjectResult;
             var error        = GetPropertyOfAnonymousObject(actionResult?.Value, "error") as string;
 
             Assert.That(actionResult?.StatusCode, Is.EqualTo(400));
@@ -141,7 +145,8 @@ namespace Hangman.Tests.Controllers
 
             A.CallTo(() => gameRepo.Get(game.Id)).Returns(game);
 
-            var actionResult = controller.Guess(game.Id, 'A') as BadRequestObjectResult;
+            var submitGuess = new SubmitGuessViewModel { GameId = game.Id, CharacterGuessed = 'A' };
+            var actionResult = controller.Guess(submitGuess) as BadRequestObjectResult;
             var error        = GetPropertyOfAnonymousObject(actionResult?.Value, "error") as string;
 
             Assert.That(actionResult?.StatusCode, Is.EqualTo(400));
@@ -155,7 +160,8 @@ namespace Hangman.Tests.Controllers
 
             A.CallTo(() => gameRepo.Get(game.Id)).Returns(game);
 
-            var actionResult     = controller.Guess(game.Id, 'A') as OkObjectResult;
+            var submitGuess = new SubmitGuessViewModel { GameId = game.Id, CharacterGuessed = '1' };
+            var actionResult     = controller.Guess(submitGuess) as OkObjectResult;
             var guessCorrect     = GetPropertyOfAnonymousObject(actionResult?.Value, "guessCorrect") as bool?;
             var word             = GetPropertyOfAnonymousObject(actionResult?.Value, "word") as string;
             var incorrectGuesses = GetPropertyOfAnonymousObject(actionResult?.Value, "incorrectGuessesRemaining") as int?;
@@ -174,7 +180,8 @@ namespace Hangman.Tests.Controllers
 
             A.CallTo(() => gameRepo.Get(game.Id)).Returns(game);
 
-            var actionResult     = controller.Guess(game.Id, 'B') as OkObjectResult;
+            var submitGuess = new SubmitGuessViewModel { GameId = game.Id, CharacterGuessed = 'B' };
+            var actionResult     = controller.Guess(submitGuess) as OkObjectResult;
             var guessCorrect     = GetPropertyOfAnonymousObject(actionResult?.Value, "guessCorrect") as bool?;
             var word             = GetPropertyOfAnonymousObject(actionResult?.Value, "word") as string;
             var incorrectGuesses = GetPropertyOfAnonymousObject(actionResult?.Value, "incorrectGuessesRemaining") as int?;

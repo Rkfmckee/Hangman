@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Hangman.Blazor.ViewModels
+﻿namespace Hangman.Blazor.ViewModels
 {
     public class GameDetailsViewModel
     {

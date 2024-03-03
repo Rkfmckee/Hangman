@@ -1,8 +1,9 @@
-using Hangman.API.ViewModels;
+using Hangman.API.Models;
+using Hangman.API.ViewModels.Games;
 using Hangman.Data.Interfaces;
 using Hangman.Enums;
 using Hangman.Helpers;
-using Hangman.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hangman.Controllers
@@ -37,7 +38,7 @@ namespace Hangman.Controllers
         #region Actions
 
         [HttpPost]
-        public ActionResult<GameViewModel> CreateGame()
+        public ActionResult CreateGame()
         {
             var words   = wordRepo.GetAll();
             var skipNum = random.Next(0, words.Count());
@@ -52,7 +53,7 @@ namespace Hangman.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<GameDetailsViewModel> GetGame(Guid id)
+        public ActionResult GetGame(Guid id)
         {
             var game = gameRepo.Get(id);
             if (game == null) return NotFound();
@@ -63,7 +64,7 @@ namespace Hangman.Controllers
         }
 
         [HttpGet("List")]
-        public ActionResult<List<GameViewModel>> GetAllGames()
+        public ActionResult GetAllGames()
         {
             var games = gameRepo.GetAll();
             if (games == null) return NotFound();
@@ -78,8 +79,9 @@ namespace Hangman.Controllers
             return Ok(gameList);
         }
 
+        [Authorize(Roles = "Player")]
         [HttpPost("Guess")]
-        public ActionResult<GuessViewModel> Guess(SubmitGuessViewModel guessSubmitted)
+        public ActionResult Guess(SubmitGuessViewModel guessSubmitted)
         {
             var gameId = guessSubmitted.GameId;
             var characterGuessed = guessSubmitted.CharacterGuessed;

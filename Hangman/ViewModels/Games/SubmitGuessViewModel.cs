@@ -1,4 +1,4 @@
-﻿namespace Hangman.API.ViewModels
+﻿namespace Hangman.API.ViewModels.Games
 {
     public class SubmitGuessViewModel
     {

@@ -1,4 +1,5 @@
-﻿using Hangman.Models;
+﻿using Hangman.API.Models;
+using BC = BCrypt.Net.BCrypt;
 
 namespace Hangman.Data
 {
@@ -27,6 +28,7 @@ namespace Hangman.Data
 				context.Database.EnsureCreated();
 
                 AddWords();
+				AddUser("TestUser");
 
 				context.SaveChanges();
 			}
@@ -45,6 +47,12 @@ namespace Hangman.Data
 			reader.Close();
         }
 
-		#endregion
-	}
+		public static void AddUser(string username)
+		{
+            var user = new User(username, BC.HashPassword("Pa$$w0rd"));
+			context.Users.Add(user);
+        }
+
+        #endregion
+    }
 }

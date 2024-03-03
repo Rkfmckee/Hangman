@@ -1,8 +1,9 @@
 ﻿@page "/"
+@attribute [Authorize]
 
 <PageTitle>Hangman games</PageTitle>
 
-<h1>View all your games of Hangman</h1>
+<h1>View all your games of Hangman, @Name</h1>
 
 @if (Games.Count == 0)
 {

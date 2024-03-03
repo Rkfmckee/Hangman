@@ -1,0 +1,22 @@
+﻿@page "/login"
+
+<fieldset>
+    <EditForm Model="@viewModel" OnValidSubmit="SubmitAsync">
+        <div>
+            <label for="username">Username</label>
+            <InputText @bind-Value="@viewModel.Username" id="username" name="username" required></InputText>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <InputText @bind-Value="@viewModel.Password" id="password" name="password" required></InputText>
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </EditForm>
+</fieldset>
+
+@if (errorMessage is not null)
+{
+    <p class="error">@errorMessage</p>
+}

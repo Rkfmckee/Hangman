@@ -9,6 +9,9 @@ namespace Hangman.Blazor.Pages.Login
         [Inject]
         public IAuthenticationService AuthenticationService { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         private LoginViewModel viewModel { get; set; } = new LoginViewModel();
         private string? errorMessage { get; set; }
 
@@ -17,6 +20,7 @@ namespace Hangman.Blazor.Pages.Login
             try
             {
                 await AuthenticationService.LoginAsync(viewModel);
+                NavigationManager.NavigateTo("/home");
             }
             catch (Exception ex)
             {

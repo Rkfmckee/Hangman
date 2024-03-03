@@ -1,12 +1,12 @@
 ﻿using Hangman.API.Data;
 using Hangman.API.Models;
 using Hangman.API.ViewModels.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Unicode;
 using BC = BCrypt.Net.BCrypt;
 
 namespace Hangman.API.Controllers
@@ -24,6 +24,7 @@ namespace Hangman.API.Controllers
             this.configuration = configuration;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public ActionResult Register(RegisterViewModel registerDetails)
         {
@@ -34,6 +35,7 @@ namespace Hangman.API.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public ActionResult<User> Login(LoginViewModel loginDetails)
         {
@@ -53,7 +55,8 @@ namespace Hangman.API.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, "Player")
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("Keys:JwtKey").Value));

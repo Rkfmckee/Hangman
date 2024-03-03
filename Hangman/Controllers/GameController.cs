@@ -3,6 +3,7 @@ using Hangman.API.ViewModels.Games;
 using Hangman.Data.Interfaces;
 using Hangman.Enums;
 using Hangman.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hangman.Controllers
@@ -78,6 +79,7 @@ namespace Hangman.Controllers
             return Ok(gameList);
         }
 
+        [Authorize(Roles = "Player")]
         [HttpPost("Guess")]
         public ActionResult Guess(SubmitGuessViewModel guessSubmitted)
         {

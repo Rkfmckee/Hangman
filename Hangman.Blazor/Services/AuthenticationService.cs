@@ -13,12 +13,12 @@ namespace Hangman.Blazor.Services
     {
         private const string JWT_KEY = nameof(JWT_KEY);
 
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory factory;
         private readonly ISessionStorageService sessionStorageService;
 
-        public AuthenticationService(HttpClient httpClient, ISessionStorageService sessionStorageService)
+        public AuthenticationService(IHttpClientFactory factory, ISessionStorageService sessionStorageService)
         {
-            this.httpClient = httpClient;
+            this.factory = factory;
             this.sessionStorageService = sessionStorageService;
         }
 
@@ -32,7 +32,7 @@ namespace Hangman.Blazor.Services
         public async Task LoginAsync(LoginViewModel loginViewModel)
         {
             var request = new StringContent(JsonSerializer.Serialize(loginViewModel), Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync("api/User/login", request);
+            var response = await factory.CreateClient("ServerApi").PostAsync("api/User/login", request);
             if (!response.IsSuccessStatusCode) throw new UnauthorizedAccessException("Login failed");
 
             var content = await response.Content.ReadFromJsonAsync<AuthTokenViewModel>();

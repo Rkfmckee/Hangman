@@ -12,9 +12,9 @@ namespace Hangman.Blazor.Services
 
         private JsonSerializerOptions jsonOptions;
 
-        public GameService(HttpClient httpClient)
+        public GameService(IHttpClientFactory factory)
         {
-            this.httpClient = httpClient;
+            httpClient = factory.CreateClient("ServerApi");
 
             jsonOptions = new JsonSerializerOptions
             {

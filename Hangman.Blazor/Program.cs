@@ -1,3 +1,4 @@
+using Blazored.SessionStorage;
 using Hangman.Blazor;
 using Hangman.Blazor.Authentication;
 using Hangman.Blazor.Interfaces;
@@ -14,6 +15,9 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 
+builder.Services.AddBlazoredSessionStorageAsSingleton();
+
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IGameService, GameService>();
 
 await builder.Build().RunAsync();

@@ -87,7 +87,9 @@ app.UseRouting();
 
 app.UseCors(options =>
 {
-    options.WithOrigins("https://localhost:7196");
+    options.AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowAnyOrigin();
 });
 
 app.UseAuthentication();

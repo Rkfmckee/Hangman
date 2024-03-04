@@ -1,4 +1,5 @@
 ﻿@page "/game/{id:guid}"
+@using Hangman.Blazor.Pages.GameDetails.Components.GameDetailsList
 
 <PageTitle>Game details</PageTitle>
 
@@ -11,8 +12,5 @@
 else
 {
     <p>Game Id: @Id</p>
-    <p>Game Status: @Game?.GameStatus</p>
-    <p>Word: @Game?.Word</p>
-    <p>Incorrect guesses left: @Game?.IncorrectGuessesLeft</p>
-    <p>Guesses: @Game?.Guesses</p>
+    <GameDetailsList Game="@Game" />
 }

@@ -1,11 +1,12 @@
-﻿@inject NavigationManager navigationManager
+﻿@using Hangman.Blazor.Components
+@inject NavigationManager navigationManager
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    @{ navigationManager.NavigateTo("/login"); }
+                    <RedirectToLogin />
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

@@ -1,5 +1,6 @@
 ﻿@page "/"
 @page "/home"
+@using Hangman.Blazor.Pages.Index.Components.GamesTable
 @attribute [Authorize]
 
 <PageTitle>Hangman games</PageTitle>
@@ -12,23 +13,5 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Game ID</th>
-                <th>Game Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var game in Games)
-            {
-                <tr>
-                    <td>@game.GameId</td>
-                    <td>@game.GameStatus</td>
-                    <td><a href="game/@game.GameId">View details</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <GamesTable Games="@Games" />
 }

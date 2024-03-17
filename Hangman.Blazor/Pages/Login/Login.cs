@@ -20,7 +20,7 @@ namespace Hangman.Blazor.Pages.Login
             try
             {
                 await AuthenticationService.LoginAsync(viewModel);
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/", true);
             }
             catch (Exception ex)
             {
